@@ -2,13 +2,13 @@
 # Smart Downloader
 
 ## Description
-HTTP(s) files downloader that can resume your downloads and supports download speed limits (throttle)
+HTTP(s) files downloader that can resume your downloads and supports download speed limits (throttle).
+It also supports file download progress callback to receive progress value in percentage.
 
-It can also validate md5 checksum of the downloaded file, if you need to verify your download.
+If you already know file md5 checksum, you can also validate downloaded file against it.
 
-*Important - it currently uses `wget` shell function to make file downloads resumable and throttled. So it might not work on all operating systems.
-
-There is plan to add a fall back to just normal download for unsupported operating systems.
+*Important - it currently uses `wget` to make file downloads resumable and throttled. So it might not work on all operating systems.
+There is a plan to add a fall back to just normal download for unsupported operating systems.
 
 ## Install
 ```npm install --save smart-downloader```
@@ -34,7 +34,7 @@ downloader.download({
 ```
 
 ## Advanced usage
-A file download with an option to resume and limit download speed to 125 kBps and custom destination file name:
+A file download with an option to resume and limit download speed to 125 kBps (125 KiloBytes = 1 Megabit) and a custom destination file name:
 ```
 const SmartDownloader = require('smart-downloader');
 
@@ -45,7 +45,7 @@ downloader.download({
     destinationDir: './downloads/',
     destinationFileName: 'advanced-1.jpg',
     resumeDownload: true,
-    downloadSpeedLimit: 25 //value in KiloBytes per second
+    downloadSpeedLimit: 125 //value in KiloBytes per second
 }, (err, data) => {
 
     if (err) {
@@ -80,7 +80,7 @@ downloader.download({
     console.log(data);
 });
 ```
-You can pass progress callback as well, to get progress data emitted to it
+You can pass progress callback to get download progress updates
 ```
 const SmartDownloader = require('smart-downloader');
 
