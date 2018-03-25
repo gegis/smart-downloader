@@ -2,3 +2,5 @@ node_modules
 .idea
 downloads
 test.js
+npm-debug.log
+

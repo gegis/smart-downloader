@@ -1,1 +1,1 @@
-module.exports = require('./src/Downloader');
+module.exports = require('./build/Downloader');
