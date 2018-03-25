@@ -12,18 +12,12 @@
     "download",
     "downloader",
     "file",
-    "downloader",
     "http",
-    "downloader",
     "limit",
     "speed",
-    "download",
     "throttled",
-    "download",
     "resumable",
-    "download",
-    "resume",
-    "download"
+    "resume"
   ],
   "repository": {
     "type": "git",
