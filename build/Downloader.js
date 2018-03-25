@@ -71,15 +71,7 @@ var Downloader = function () {
 
             var cmdOptions = [];
 
-            if (!options.uri) {
-
-                throw new Error('Download uri not specified');
-            }
-
-            if (!options.destinationDir) {
-
-                throw new Error('Destination dir not specified');
-            }
+            this.validateOptions(options);
 
             if (options.destinationFileName) {
 
@@ -106,6 +98,20 @@ var Downloader = function () {
             this.debug('wget', cmdOptions.join(" "));
 
             return cmdOptions;
+        }
+    }, {
+        key: 'validateOptions',
+        value: function validateOptions(options) {
+
+            if (!options.uri) {
+
+                throw new Error('Download uri not specified');
+            }
+
+            if (!options.destinationDir) {
+
+                throw new Error('Destination dir not specified');
+            }
         }
     }, {
         key: 'registerListeners',

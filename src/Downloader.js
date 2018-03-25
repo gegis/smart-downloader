@@ -57,15 +57,7 @@ class Downloader {
 
         let cmdOptions = [];
 
-        if (!options.uri) {
-
-            throw new Error('Download uri not specified');
-        }
-
-        if (!options.destinationDir) {
-
-            throw new Error('Destination dir not specified');
-        }
+        this.validateOptions(options);
 
         if (options.destinationFileName) {
 
@@ -92,6 +84,19 @@ class Downloader {
         this.debug('wget', cmdOptions.join(" "));
 
         return cmdOptions;
+    }
+
+    validateOptions(options) {
+
+        if (!options.uri) {
+
+            throw new Error('Download uri not specified');
+        }
+
+        if (!options.destinationDir) {
+
+            throw new Error('Destination dir not specified');
+        }
     }
 
     registerListeners(command, options, next, progress) {
@@ -161,7 +166,7 @@ class Downloader {
                     err = commandError;
                 } else {
 
-                    err = new Error(`Download error: ${code} - ${signal}`)
+                    err = new Error(`Download error: ${code} - ${signal}`);
                 }
 
                 return next(
