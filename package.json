@@ -23,8 +23,12 @@
     "resume",
     "download"
   ],
-  "author": "Egis",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gegis/smart-downloader.git"
+  },
+  "author": "Egidijus Gegeckas",
+  "license": "MIT",
   "dependencies": {
     "command-exists": "^1.2.2",
     "fs-extra": "^5.0.0",
