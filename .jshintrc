@@ -1,0 +1,21 @@
+{
+    "node": true,
+    "esversion": 6,
+    "laxcomma": false,
+    "indent": 4,
+    "globalstrict": true,
+    "maxparams": 5,
+    "maxdepth": 2,
+    "maxstatements": 15,
+    "maxcomplexity": 5,
+    "maxlen": 120,
+    "globals": {
+        "_": true,
+        "describe": true,
+        "beforeEach": true,
+        "inject": true,
+        "it": true,
+        "expect": true,
+        "app": true
+    }
+}
