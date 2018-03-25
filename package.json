@@ -1,6 +1,6 @@
 {
   "name": "smart-downloader",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "HTTP(s) downloader, which resumes your downloads and supports download speed limits",
   "main": "index.js",
   "scripts": {
