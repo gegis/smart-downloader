@@ -18,7 +18,9 @@ class Downloader {
         this.config = _.merge({}, {
             debug: false,
             resumeDownload: true,
-            downloadSpeedLimit: null //value in KiloBytes per second
+            downloadSpeedLimit: null, //value in KiloBytes per second
+            downloadSpeedLimitUnit: 'k',
+            progressUpdateInterval: 500 //value in ms
         }, options);
     }
 
@@ -80,7 +82,7 @@ class Downloader {
 
         if (options.downloadSpeedLimit) {
 
-            cmdOptions.push(`--limit-rate=${options.downloadSpeedLimit}k`);
+            cmdOptions.push(`--limit-rate=${options.downloadSpeedLimit}${options.downloadSpeedLimitUnit}`);
         }
 
         cmdOptions.push('-O', options.destinationFilePath);
@@ -96,17 +98,18 @@ class Downloader {
 
 
         let commandError = null;
+        let progressOptions = {timeout: null};
 
         if (progress && _.isFunction(progress)) {
 
             command.stdout.on('data', (data) => {
 
-                this.onData(data, options, progress);
+                this.onData(data, options, progressOptions, progress);
             });
 
             command.stderr.on('data', (data) => {
 
-                this.onData(data, options, progress);
+                this.onData(data, options, progressOptions, progress);
             });
         }
 
@@ -131,6 +134,8 @@ class Downloader {
         command.on('exit', (code, signal) => {
 
             let err;
+            clearTimeout(progressOptions.timeout);
+            progressOptions.timeout = null;
 
             if (code === 0 && _.isNull(signal)) {
 
@@ -172,15 +177,20 @@ class Downloader {
         });
     }
 
-    onData(data, options, progress) {
+    onData(data, options, progressOptions, progress) {
 
         let dataString;
-        if (data) {
+        if (data && !progressOptions.timeout) {
 
             dataString = data.toString();
             if (data && _.indexOf(dataString, "%") !== -1) {
 
                 progress(null, _.merge({}, options, {progress: this.parseProgress(dataString)}));
+                progressOptions.timeout = setTimeout(() => {
+
+                    clearTimeout(progressOptions.timeout);
+                    progressOptions.timeout = null;
+                }, options.progressUpdateInterval);
             }
         }
     }
