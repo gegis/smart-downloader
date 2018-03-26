@@ -13,7 +13,7 @@ gulp.task('build', function () {
         .pipe(babel({
             presets: ["es2015"]
         }))
-        .pipe(gulp.dest('./build'));
+        .pipe(gulp.dest('./bin'));
 });
 
 gulp.task('lint', function() {

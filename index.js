@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require('./build/Downloader');
+module.exports = require('./bin/Downloader');

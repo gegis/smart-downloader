@@ -28,7 +28,7 @@ var Downloader = function () {
             resumeDownload: true,
             downloadSpeedLimit: null, //value in KiloBytes per second
             downloadSpeedLimitUnit: 'k',
-            progressUpdateInterval: 500 //value in ms
+            progressUpdateInterval: 1000 //value in ms
         }, options);
     }
 
@@ -62,7 +62,6 @@ var Downloader = function () {
             } else {
 
                 next(new Error('wget command is not supported'), options);
-                //TODO implement a fall back download
             }
         }
     }, {

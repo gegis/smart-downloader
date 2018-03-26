@@ -6,7 +6,7 @@ HTTP(s) files downloader that can resume your downloads and supports download sp
 It also supports file download progress callback to receive progress value in percentage.
 Script ensures (creates if missing) that destination dir exists.
 
-If you know md5 checksum value for the the file to download, you can also validate downloaded file against it.
+If you already know md5 checksum value for the file to be downloaded, you can also validate downloaded file against it.
 
 *Important - it currently uses `wget` to make file downloads resumable and throttled, so it might not work on all operating systems.
 There is a plan to add a fall back to just normal download for unsupported operating systems.
@@ -57,7 +57,7 @@ downloader.download({
     console.log(data);
 });
 ```
-You can also specify defaults in constructor and specify md5 checksum value for the downloaded file to be verified
+You can also specify defaults in constructor and specify md5 checksum value for the downloaded file to be verified:
 ```
 const SmartDownloader = require('smart-downloader');
 
@@ -81,14 +81,14 @@ downloader.download({
     console.log(data);
 });
 ```
-You can pass progress callback to get download progress updates
+You can pass progress callback to get download progress updates:
 ```
 const SmartDownloader = require('smart-downloader');
 
 const downloader = new SmartDownloader({
     resumeDownload: true,
     downloadSpeedLimit: 250, //value in KiloBytes per second
-    progressUpdateInterval: 1000 // value in milliseconds
+    progressUpdateInterval: 2000 // value in milliseconds
 });
 
 downloader.download({
