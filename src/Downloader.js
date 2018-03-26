@@ -49,6 +49,7 @@ class Downloader {
         } else {
 
             next(new Error('wget command is not supported'), options);
+            //TODO implement a fall back download
         }
     }
 
