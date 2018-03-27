@@ -8,11 +8,14 @@ const _ = require('lodash');
 const MDFive = require('mdfive').MDFive;
 
 /**
- * Downloader
- * @private
+ * Downloader Class
  */
 class Downloader {
 
+    /**
+     * Constructor
+     * @param options object - to override default values
+     */
     constructor(options) {
 
         this.config = _.merge({}, {
@@ -25,10 +28,10 @@ class Downloader {
     }
 
     /**
-     *
+     * Main download function
      * @param options object - uri, destinationDir, [destinationFileName, md5, downloadSpeedLimit, resumeDownload]
-     * @param next
-     * @param progress
+     * @param next function - main callback
+     * @param progress - callback to receive file download progress
      */
     download(options, next, progress) {
 
@@ -53,6 +56,11 @@ class Downloader {
         }
     }
 
+    /**
+     * Builds command line params for wget function
+     * @param options
+     * @returns {Array}
+     */
     buildCommandOptions(options) {
 
         let cmdOptions = [];
@@ -86,6 +94,10 @@ class Downloader {
         return cmdOptions;
     }
 
+    /**
+     * Validates required options values
+     * @param options
+     */
     validateOptions(options) {
 
         if (!options.uri) {
@@ -99,8 +111,14 @@ class Downloader {
         }
     }
 
+    /**
+     * Registers child process stdout/stderr listeners and binds parsed responses to next and progress callbacks
+     * @param command function - a spawned child process
+     * @param options object - all options
+     * @param next function - main callback
+     * @param progress function - progress updates callback
+     */
     registerListeners(command, options, next, progress) {
-
 
         let commandError = null;
         let progressOptions = {timeout: null};
@@ -182,6 +200,13 @@ class Downloader {
         });
     }
 
+    /**
+     * On data from child process stdout/stderr, it sends progress updates every options.progressUpdateInterval
+     * @param data buffer
+     * @param options object
+     * @param progressOptions object
+     * @param progress function
+     */
     onData(data, options, progressOptions, progress) {
 
         let dataString;
@@ -200,6 +225,11 @@ class Downloader {
         }
     }
 
+    /**
+     * Parse progress string to get percentage value
+     * @param dataString
+     * @returns {*|string}
+     */
     parseProgress(dataString) {
 
         dataString = dataString.replace(/\./g, "");
@@ -211,6 +241,11 @@ class Downloader {
         return dataString.split("%")[0];
     }
 
+    /**
+     * Checks if options.md5 matches doanloaded file
+     * @param options object
+     * @param next function
+     */
     checkMd5Sum(options, next) {
 
         const md5 = new MDFive();
@@ -235,6 +270,10 @@ class Downloader {
         });
     }
 
+    /**
+     * Debugs data if enabled
+     * @param data
+     */
     debug(data) {
 
         if (this.config.debug) {

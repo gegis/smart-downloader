@@ -3,4 +3,4 @@ node_modules
 downloads
 test.js
 npm-debug.log
-
+coverage

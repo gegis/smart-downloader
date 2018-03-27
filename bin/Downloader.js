@@ -15,11 +15,15 @@ var _ = require('lodash');
 var MDFive = require('mdfive').MDFive;
 
 /**
- * Downloader
- * @private
+ * Downloader Class
  */
 
 var Downloader = function () {
+
+    /**
+     * Constructor
+     * @param options object - to override default values
+     */
     function Downloader(options) {
         _classCallCheck(this, Downloader);
 
@@ -33,10 +37,10 @@ var Downloader = function () {
     }
 
     /**
-     *
+     * Main download function
      * @param options object - uri, destinationDir, [destinationFileName, md5, downloadSpeedLimit, resumeDownload]
-     * @param next
-     * @param progress
+     * @param next function - main callback
+     * @param progress - callback to receive file download progress
      */
 
 
@@ -65,6 +69,13 @@ var Downloader = function () {
                 //TODO implement a fall back download
             }
         }
+
+        /**
+         * Builds command line params for wget function
+         * @param options
+         * @returns {Array}
+         */
+
     }, {
         key: 'buildCommandOptions',
         value: function buildCommandOptions(options) {
@@ -99,6 +110,12 @@ var Downloader = function () {
 
             return cmdOptions;
         }
+
+        /**
+         * Validates required options values
+         * @param options
+         */
+
     }, {
         key: 'validateOptions',
         value: function validateOptions(options) {
@@ -113,6 +130,15 @@ var Downloader = function () {
                 throw new Error('Destination dir not specified');
             }
         }
+
+        /**
+         * Registers child process stdout/stderr listeners and binds parsed responses to next and progress callbacks
+         * @param command function - a spawned child process
+         * @param options object - all options
+         * @param next function - main callback
+         * @param progress function - progress updates callback
+         */
+
     }, {
         key: 'registerListeners',
         value: function registerListeners(command, options, next, progress) {
@@ -193,6 +219,15 @@ var Downloader = function () {
                 }
             });
         }
+
+        /**
+         * On data from child process stdout/stderr, it sends progress updates every options.progressUpdateInterval
+         * @param data buffer
+         * @param options object
+         * @param progressOptions object
+         * @param progress function
+         */
+
     }, {
         key: 'onData',
         value: function onData(data, options, progressOptions, progress) {
@@ -212,6 +247,13 @@ var Downloader = function () {
                 }
             }
         }
+
+        /**
+         * Parse progress string to get percentage value
+         * @param dataString
+         * @returns {*|string}
+         */
+
     }, {
         key: 'parseProgress',
         value: function parseProgress(dataString) {
@@ -224,6 +266,13 @@ var Downloader = function () {
 
             return dataString.split("%")[0];
         }
+
+        /**
+         * Checks if options.md5 matches doanloaded file
+         * @param options object
+         * @param next function
+         */
+
     }, {
         key: 'checkMd5Sum',
         value: function checkMd5Sum(options, next) {
@@ -247,6 +296,12 @@ var Downloader = function () {
                 return next(err, options);
             });
         }
+
+        /**
+         * Debugs data if enabled
+         * @param data
+         */
+
     }, {
         key: 'debug',
         value: function debug(data) {
