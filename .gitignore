@@ -1,6 +1,6 @@
 node_modules
 .idea
 downloads
-test.js
+local-test.js
 npm-debug.log
 coverage

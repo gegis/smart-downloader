@@ -50,7 +50,9 @@ describe('File Download Tests', function() {
     describe('Call download with md5 checksum to validate downloaded file', function () {
         it('should download and validate file', function (done) {
 
-            const downloader = new SmartDownloader();
+            const downloader = new SmartDownloader({
+                resumeDownload: false
+            });
             downloader.download({
                 uri: 'http://www.gstatic.com/webp/gallery/1.jpg',
                 destinationDir: './downloads/',
@@ -77,7 +79,6 @@ describe('File Download Tests', function() {
                 md5: 'd4a63031f57bdcafb86ca02100fdd6d2wrong'
             }, (err, data) => {
 
-                console.log(err.message);
                 assert.equal(err.message, 'md5sum does not match');
                 assert.equal(data.md5Matches, false);
                 assert.equal(data.md5Actual, 'd4a63031f57bdcafb86ca02100fdd6d2');
@@ -123,6 +124,21 @@ describe('File Download Tests', function() {
                     doneCalled = true;
                     done();
                 }
+            });
+        });
+    });
+
+    describe('Download non existing file', function () {
+        it('should fail to download file', function (done) {
+
+            const downloader = new SmartDownloader();
+            downloader.download({
+                uri: 'non-existing-url',
+                destinationDir: './downloads/'
+            }, (err, data) => {
+
+                assert.equal(err.message, 'Download error: 4 - null');
+                done();
             });
         });
     });

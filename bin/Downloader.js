@@ -13,6 +13,9 @@ var _require = require('child_process'),
 var commandExistsSync = require('command-exists').sync;
 var _ = require('lodash');
 var MDFive = require('mdfive').MDFive;
+var decompress = require('decompress');
+
+var md5 = new MDFive();
 
 /**
  * Downloader Class
@@ -186,20 +189,7 @@ var Downloader = function () {
 
                 if (code === 0 && _.isNull(signal)) {
 
-                    _.merge(options, { progress: 100 });
-
-                    if (progress && _.isFunction(progress)) {
-
-                        progress(null, options);
-                    }
-
-                    if (options.md5) {
-
-                        return _this.checkMd5Sum(options, next);
-                    } else {
-
-                        return next(null, options);
-                    }
+                    _this.onExitSuccess(options, next, progress);
                 } else {
 
                     if (commandError) {
@@ -218,6 +208,19 @@ var Downloader = function () {
                     }));
                 }
             });
+        }
+    }, {
+        key: 'onExitSuccess',
+        value: function onExitSuccess(options, next, progress) {
+
+            _.merge(options, { progress: 100 });
+
+            if (progress && _.isFunction(progress)) {
+
+                progress(null, options);
+            }
+
+            return this.checkMd5Sum(options, this.extract.bind(this, next));
         }
 
         /**
@@ -277,24 +280,51 @@ var Downloader = function () {
         key: 'checkMd5Sum',
         value: function checkMd5Sum(options, next) {
 
-            var md5 = new MDFive();
+            if (options.md5) {
 
-            options.md5Matches = false;
-            md5.fileChecksum(options.destinationFilePath).then(function (checksum) {
+                options.md5Matches = false;
+                md5.fileChecksum(options.destinationFilePath).then(function (checksum) {
 
-                if (checksum === options.md5) {
+                    if (checksum === options.md5) {
 
-                    options.md5Matches = true;
-                    return next(null, options);
-                } else {
+                        options.md5Matches = true;
+                        return next(null, options);
+                    } else {
 
-                    options.md5Actual = checksum;
-                    next(new Error('md5sum does not match'), options);
-                }
-            }).catch(function (err) {
+                        options.md5Actual = checksum;
+                        return next(new Error('md5sum does not match'), options);
+                    }
+                }).catch(function (err) {
+
+                    return next(err, options);
+                });
+            } else {
+
+                next(null, options);
+            }
+        }
+    }, {
+        key: 'extract',
+        value: function extract(next, err, options) {
+
+            if (err) {
 
                 return next(err, options);
-            });
+            }
+
+            if (options.extractDir) {
+
+                decompress(options.destinationFilePath, options.extractDir).then(function (files) {
+
+                    return next(null, options);
+                }).catch(function (e) {
+
+                    return next(e, options);
+                });
+            } else {
+
+                return next(null, options);
+            }
         }
 
         /**

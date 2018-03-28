@@ -2,8 +2,9 @@
 # Smart Downloader
 
 ## Description
-HTTP(s) files downloader that can resume your downloads and supports download speed limits (throttle) and download progress updates.
+HTTP(s) files downloader that can resume your downloads and supports download speed limits (throttle).
 It also supports file download progress callback to receive progress value in percentage.
+You can also extract downloaded archive file, just specify where to.
 Script ensures (creates if missing) that destination dir exists.
 
 If you already know md5 checksum value for the file to be downloaded, you can also validate downloaded file against it.

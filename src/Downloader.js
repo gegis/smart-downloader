@@ -6,6 +6,9 @@ const { spawn } = require('child_process');
 const commandExistsSync = require('command-exists').sync;
 const _ = require('lodash');
 const MDFive = require('mdfive').MDFive;
+const decompress = require('decompress');
+
+const md5 = new MDFive();
 
 /**
  * Downloader Class
@@ -162,21 +165,7 @@ class Downloader {
 
             if (code === 0 && _.isNull(signal)) {
 
-                _.merge(options, {progress: 100});
-
-                if (progress && _.isFunction(progress)) {
-
-                    progress(null, options);
-                }
-
-                if (options.md5) {
-
-                    return this.checkMd5Sum(options, next);
-                } else {
-
-                    return next(null, options);
-                }
-
+                this.onExitSuccess(options, next, progress);
             } else {
 
                 if (commandError) {
@@ -198,6 +187,18 @@ class Downloader {
                 );
             }
         });
+    }
+
+    onExitSuccess(options, next, progress) {
+
+        _.merge(options, {progress: 100});
+
+        if (progress && _.isFunction(progress)) {
+
+            progress(null, options);
+        }
+
+        return this.checkMd5Sum(options, this.extract.bind(this, next));
     }
 
     /**
@@ -248,26 +249,55 @@ class Downloader {
      */
     checkMd5Sum(options, next) {
 
-        const md5 = new MDFive();
+        if (options.md5) {
 
-        options.md5Matches = false;
-        md5.fileChecksum(options.destinationFilePath).then((checksum) => {
+            options.md5Matches = false;
+            md5.fileChecksum(options.destinationFilePath).then((checksum) => {
 
-            if (checksum === options.md5) {
+                if (checksum === options.md5) {
 
-                options.md5Matches = true;
-                return next(null, options);
+                    options.md5Matches = true;
+                    return next(null, options);
 
-            } else {
+                } else {
 
-                options.md5Actual = checksum;
-                next(new Error('md5sum does not match'), options);
-            }
+                    options.md5Actual = checksum;
+                    return next(new Error('md5sum does not match'), options);
+                }
 
-        }).catch((err) => {
+            }).catch((err) => {
+
+                return next(err, options);
+            });
+        } else {
+
+            next(null, options);
+        }
+
+    }
+
+    extract(next, err, options) {
+
+        if (err) {
 
             return next(err, options);
-        });
+        }
+
+        if (options.extractDir) {
+
+            decompress(options.destinationFilePath, options.extractDir)
+            .then(files => {
+
+                return next(null, options);
+            })
+            .catch(e => {
+
+                return next(e, options);
+            });
+        } else {
+
+            return next(null, options);
+        }
     }
 
     /**
