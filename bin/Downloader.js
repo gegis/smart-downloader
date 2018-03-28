@@ -16,6 +16,16 @@ var MDFive = require('mdfive').MDFive;
 var decompress = require('decompress');
 
 var md5 = new MDFive();
+var wgetErrorCodes = {
+    1: 'Wget error',
+    2: 'Parse error',
+    3: 'File I/O error',
+    4: 'Network failure',
+    5: 'SSL verification failure',
+    6: 'Username/password authentication failure',
+    7: 'Protocol error',
+    8: 'Server issued an error response'
+};
 
 /**
  * Downloader Class
@@ -183,35 +193,29 @@ var Downloader = function () {
 
             command.on('exit', function (code, signal) {
 
-                var err = void 0;
                 clearTimeout(progressOptions.timeout);
                 progressOptions.timeout = null;
 
                 if (code === 0 && _.isNull(signal)) {
 
-                    _this.onExitSuccess(options, next, progress);
+                    _this.onSuccessExit(options, next, progress);
                 } else {
 
-                    if (commandError) {
-
-                        err = commandError;
-                    } else {
-
-                        err = new Error('Download error: ' + code + ' - ' + signal);
-                    }
-
-                    return next(err, _.merge({}, options, {
-                        error: {
-                            code: code,
-                            signal: signal
-                        }
-                    }));
+                    _this.onErrorExit(commandError, code, signal, options, next);
                 }
             });
         }
+
+        /**
+         * After child process exit without error code, check md5 if needed and try to extract if needed
+         * @param options
+         * @param next
+         * @param progress
+         */
+
     }, {
-        key: 'onExitSuccess',
-        value: function onExitSuccess(options, next, progress) {
+        key: 'onSuccessExit',
+        value: function onSuccessExit(options, next, progress) {
 
             _.merge(options, { progress: 100 });
 
@@ -224,7 +228,70 @@ var Downloader = function () {
         }
 
         /**
-         * On data from child process stdout/stderr, it sends progress updates every options.progressUpdateInterval
+         * After child process exit with error code, finishes cb flow
+         * @param commandError
+         * @param code
+         * @param signal
+         * @param options
+         * @param next
+         * @returns {*}
+         */
+
+    }, {
+        key: 'onErrorExit',
+        value: function onErrorExit(commandError, code, signal, options, next) {
+
+            var err = void 0;
+            if (commandError) {
+
+                err = commandError;
+            } else {
+
+                err = this.getWgetError(code, signal);
+            }
+
+            return next(err, _.merge({}, options, {
+                error: {
+                    code: code,
+                    signal: signal
+                }
+            }));
+        }
+
+        /**
+         * Tries to get pretty error message for exit code
+         * @param code
+         * @param signal
+         * @returns {Error}
+         */
+
+    }, {
+        key: 'getWgetError',
+        value: function getWgetError(code, signal) {
+
+            var err = 'Download error';
+
+            if (wgetErrorCodes.hasOwnProperty(code)) {
+
+                err = wgetErrorCodes[code];
+            } else {
+
+                if (code) {
+
+                    err += '. Code: ' + code;
+                }
+
+                if (signal) {
+
+                    err += '. Signal: ' + signal;
+                }
+            }
+
+            return new Error(err);
+        }
+
+        /**
+         * On data from child process stdout/stderr, it sends progress updates on every options.progressUpdateInterval
          * @param data buffer
          * @param options object
          * @param progressOptions object
@@ -294,15 +361,24 @@ var Downloader = function () {
                         options.md5Actual = checksum;
                         return next(new Error('md5sum does not match'), options);
                     }
-                }).catch(function (err) {
+                }).catch(function (e) {
 
-                    return next(err, options);
+                    return next(e, options);
                 });
             } else {
 
                 next(null, options);
             }
         }
+
+        /**
+         * If extract dir is specified, it will attempt to extract downloaded file
+         * @param next
+         * @param err
+         * @param options
+         * @returns {*}
+         */
+
     }, {
         key: 'extract',
         value: function extract(next, err, options) {

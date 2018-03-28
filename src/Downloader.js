@@ -9,6 +9,16 @@ const MDFive = require('mdfive').MDFive;
 const decompress = require('decompress');
 
 const md5 = new MDFive();
+const wgetErrorCodes = {
+    1: 'Wget error',
+    2: 'Parse error',
+    3: 'File I/O error',
+    4: 'Network failure',
+    5: 'SSL verification failure',
+    6: 'Username/password authentication failure',
+    7: 'Protocol error',
+    8: 'Server issued an error response'
+};
 
 /**
  * Downloader Class
@@ -159,37 +169,26 @@ class Downloader {
 
         command.on('exit', (code, signal) => {
 
-            let err;
             clearTimeout(progressOptions.timeout);
             progressOptions.timeout = null;
 
             if (code === 0 && _.isNull(signal)) {
 
-                this.onExitSuccess(options, next, progress);
+                this.onSuccessExit(options, next, progress);
             } else {
 
-                if (commandError) {
-
-                    err = commandError;
-                } else {
-
-                    err = new Error(`Download error: ${code} - ${signal}`);
-                }
-
-                return next(
-                    err,
-                    _.merge({}, options, {
-                        error: {
-                            code,
-                            signal
-                        }
-                    })
-                );
+                this.onErrorExit(commandError, code, signal, options, next);
             }
         });
     }
 
-    onExitSuccess(options, next, progress) {
+    /**
+     * After child process exit without error code, check md5 if needed and try to extract if needed
+     * @param options
+     * @param next
+     * @param progress
+     */
+    onSuccessExit(options, next, progress) {
 
         _.merge(options, {progress: 100});
 
@@ -201,8 +200,69 @@ class Downloader {
         return this.checkMd5Sum(options, this.extract.bind(this, next));
     }
 
+
     /**
-     * On data from child process stdout/stderr, it sends progress updates every options.progressUpdateInterval
+     * After child process exit with error code, finishes cb flow
+     * @param commandError
+     * @param code
+     * @param signal
+     * @param options
+     * @param next
+     * @returns {*}
+     */
+    onErrorExit(commandError, code, signal, options, next) {
+
+        let err;
+        if (commandError) {
+
+            err = commandError;
+        } else {
+
+            err = this.getWgetError(code, signal);
+        }
+
+        return next(
+            err,
+            _.merge({}, options, {
+                error: {
+                    code,
+                    signal
+                }
+            })
+        );
+    }
+
+    /**
+     * Tries to get pretty error message for exit code
+     * @param code
+     * @param signal
+     * @returns {Error}
+     */
+    getWgetError(code, signal) {
+
+        let err = 'Download error';
+
+        if (wgetErrorCodes.hasOwnProperty(code)) {
+
+            err = wgetErrorCodes[code];
+        } else {
+
+            if (code) {
+
+                err += `. Code: ${code}`;
+            }
+
+            if (signal) {
+
+                err += `. Signal: ${signal}`;
+            }
+        }
+
+        return new Error(err);
+    }
+
+    /**
+     * On data from child process stdout/stderr, it sends progress updates on every options.progressUpdateInterval
      * @param data buffer
      * @param options object
      * @param progressOptions object
@@ -252,23 +312,25 @@ class Downloader {
         if (options.md5) {
 
             options.md5Matches = false;
-            md5.fileChecksum(options.destinationFilePath).then((checksum) => {
+            md5.fileChecksum(options.destinationFilePath)
+                .then(checksum => {
 
-                if (checksum === options.md5) {
+                    if (checksum === options.md5) {
 
-                    options.md5Matches = true;
-                    return next(null, options);
+                        options.md5Matches = true;
+                        return next(null, options);
 
-                } else {
+                    } else {
 
-                    options.md5Actual = checksum;
-                    return next(new Error('md5sum does not match'), options);
-                }
+                        options.md5Actual = checksum;
+                        return next(new Error('md5sum does not match'), options);
+                    }
 
-            }).catch((err) => {
+                })
+                .catch(e => {
 
-                return next(err, options);
-            });
+                    return next(e, options);
+                });
         } else {
 
             next(null, options);
@@ -276,6 +338,13 @@ class Downloader {
 
     }
 
+    /**
+     * If extract dir is specified, it will attempt to extract downloaded file
+     * @param next
+     * @param err
+     * @param options
+     * @returns {*}
+     */
     extract(next, err, options) {
 
         if (err) {
@@ -286,14 +355,14 @@ class Downloader {
         if (options.extractDir) {
 
             decompress(options.destinationFilePath, options.extractDir)
-            .then(files => {
+                .then(files => {
 
-                return next(null, options);
-            })
-            .catch(e => {
+                    return next(null, options);
+                })
+                .catch(e => {
 
-                return next(e, options);
-            });
+                    return next(e, options);
+                });
         } else {
 
             return next(null, options);
