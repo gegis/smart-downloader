@@ -4,8 +4,11 @@
 ## Description
 HTTP(s) files downloader that can resume your downloads and supports download speed limits (throttle).
 It also supports file download progress callback to receive progress value in percentage.
-You can also extract downloaded archive file, just specify where to.
+
 Script ensures (creates if missing) that destination dir exists.
+
+You can also extract downloaded archive file, just specify where to.
+It supports tarball (gzipped as well) and zip files.
 
 If you already know md5 checksum value for the file to be downloaded, you can also validate downloaded file against it.
 
@@ -22,7 +25,7 @@ const SmartDownloader = require('smart-downloader');
 const downloader = new SmartDownloader();
 
 downloader.download({
-    uri: 'http://www.gstatic.com/webp/gallery/1.jpg',
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code-1.jpg',
     destinationDir: './downloads/'
 }, (err, data) => {
 
@@ -43,7 +46,7 @@ const SmartDownloader = require('smart-downloader');
 const downloader = new SmartDownloader();
 
 downloader.download({
-    uri: 'http://www.gstatic.com/webp/gallery/1.jpg',
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code-1.jpg',
     destinationDir: './downloads/',
     destinationFileName: 'advanced-1.jpg',
     resumeDownload: true,
@@ -68,7 +71,7 @@ const downloader = new SmartDownloader({
 });
 
 downloader.download({
-    uri: 'http://www.gstatic.com/webp/gallery/1.jpg',
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code-1.jpg',
     destinationDir: './downloads/',
     destinationFileName: 'advanced-2.jpg',
     md5: 'd4a63031f57bdcafb86ca02100fdd6d2'
@@ -111,5 +114,24 @@ downloader.download({
         console.log(err);
     }
     console.log(`Progress: ${data.progress}%`);
+});
+```
+You can pass extract dir to extract (unzip) archived file contents:
+```
+const SmartDownloader = require('smart-downloader');
+
+const downloader = new SmartDownloader();
+
+downloader.download({
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tar.gz',
+    destinationDir: './downloads/',
+    extractDir: './downloads/code'
+}, (err, data) => {
+
+    if (err) {
+
+        console.log(err);
+    }
+    console.log(data);
 });
 ```

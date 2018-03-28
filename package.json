@@ -17,7 +17,11 @@
     "speed",
     "throttled",
     "resumable",
-    "resume"
+    "resume",
+    "md5",
+    "extract",
+    "decompress",
+    "unzip"
   ],
   "repository": {
     "type": "git",
