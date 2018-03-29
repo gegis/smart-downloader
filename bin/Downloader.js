@@ -14,6 +14,7 @@ var commandExistsSync = require('command-exists').sync;
 var _ = require('lodash');
 var MDFive = require('mdfive').MDFive;
 var decompress = require('decompress');
+var readline = require('readline');
 
 var md5 = new MDFive();
 var wgetErrorCodes = {
@@ -157,19 +158,24 @@ var Downloader = function () {
         value: function registerListeners(command, options, next, progress) {
             var _this = this;
 
+            var rlOut = void 0,
+                rlErr = void 0;
             var commandError = null;
             var progressOptions = { timeout: null };
 
             if (progress && _.isFunction(progress)) {
 
-                command.stdout.on('data', function (data) {
+                rlOut = readline.createInterface({ input: command.stdout });
+                rlErr = readline.createInterface({ input: command.stderr });
 
-                    _this.onData(data, options, progressOptions, progress);
+                rlOut.on('line', function (line) {
+
+                    _this.onDataLine(line, options, progressOptions, progress);
                 });
 
-                command.stderr.on('data', function (data) {
+                rlErr.on('line', function (line) {
 
-                    _this.onData(data, options, progressOptions, progress);
+                    _this.onDataLine(line, options, progressOptions, progress);
                 });
             }
 
@@ -299,16 +305,14 @@ var Downloader = function () {
          */
 
     }, {
-        key: 'onData',
-        value: function onData(data, options, progressOptions, progress) {
+        key: 'onDataLine',
+        value: function onDataLine(line, options, progressOptions, progress) {
 
-            var dataString = void 0;
-            if (data && !progressOptions.timeout) {
+            if (line && !progressOptions.timeout) {
 
-                dataString = data.toString();
-                if (data && _.indexOf(dataString, "%") !== -1) {
+                if (_.indexOf(line, "%") !== -1) {
 
-                    progress(null, _.merge({}, options, { progress: this.parseProgress(dataString) }));
+                    progress(null, _.merge({}, options, this.parseProgress(line)));
                     progressOptions.timeout = setTimeout(function () {
 
                         clearTimeout(progressOptions.timeout);
@@ -328,13 +332,22 @@ var Downloader = function () {
         key: 'parseProgress',
         value: function parseProgress(dataString) {
 
-            dataString = dataString.replace(/\./g, "");
-            dataString = dataString.replace(/ /g, "");
-            dataString = dataString.replace(/\n/g, "");
-            dataString = dataString.replace(/\t/g, "");
-            dataString = dataString.replace(/\r/g, "");
+            var parts = void 0;
 
-            return dataString.split("%")[0];
+            dataString = dataString.replace(/ +/g, " ");
+            dataString = dataString.replace(/ /g, ":");
+            dataString = dataString.replace(/,/g, ".");
+            dataString = dataString.replace(/\.+/g, ".");
+            dataString = dataString.replace(/\./g, ":");
+            dataString = dataString.replace(/:+/g, ":");
+            parts = dataString.split(':');
+
+            return {
+                downloaded: parts[1],
+                progress: parseInt(parts[2]),
+                speed: parts[3],
+                timeLeft: parts[4]
+            };
         }
 
         /**

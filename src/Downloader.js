@@ -7,6 +7,7 @@ const commandExistsSync = require('command-exists').sync;
 const _ = require('lodash');
 const MDFive = require('mdfive').MDFive;
 const decompress = require('decompress');
+const readline = require('readline');
 
 const md5 = new MDFive();
 const wgetErrorCodes = {
@@ -133,19 +134,23 @@ class Downloader {
      */
     registerListeners(command, options, next, progress) {
 
+        let rlOut, rlErr;
         let commandError = null;
         let progressOptions = {timeout: null};
 
         if (progress && _.isFunction(progress)) {
 
-            command.stdout.on('data', (data) => {
+            rlOut = readline.createInterface({input:command.stdout});
+            rlErr = readline.createInterface({input:command.stderr});
 
-                this.onData(data, options, progressOptions, progress);
+            rlOut.on('line', (line) => {
+
+                this.onDataLine(line, options, progressOptions, progress);
             });
 
-            command.stderr.on('data', (data) => {
+            rlErr.on('line', (line) => {
 
-                this.onData(data, options, progressOptions, progress);
+                this.onDataLine(line, options, progressOptions, progress);
             });
         }
 
@@ -268,15 +273,13 @@ class Downloader {
      * @param progressOptions object
      * @param progress function
      */
-    onData(data, options, progressOptions, progress) {
+    onDataLine(line, options, progressOptions, progress) {
 
-        let dataString;
-        if (data && !progressOptions.timeout) {
+        if (line && !progressOptions.timeout) {
 
-            dataString = data.toString();
-            if (data && _.indexOf(dataString, "%") !== -1) {
+            if (_.indexOf(line, "%") !== -1) {
 
-                progress(null, _.merge({}, options, {progress: this.parseProgress(dataString)}));
+                progress(null, _.merge({}, options, this.parseProgress(line)));
                 progressOptions.timeout = setTimeout(() => {
 
                     clearTimeout(progressOptions.timeout);
@@ -293,13 +296,22 @@ class Downloader {
      */
     parseProgress(dataString) {
 
-        dataString = dataString.replace(/\./g, "");
-        dataString = dataString.replace(/ /g, "");
-        dataString = dataString.replace(/\n/g, "");
-        dataString = dataString.replace(/\t/g, "");
-        dataString = dataString.replace(/\r/g, "");
+        let parts;
 
-        return dataString.split("%")[0];
+        dataString = dataString.replace(/ +/g, " ");
+        dataString = dataString.replace(/ /g, ":");
+        dataString = dataString.replace(/,/g, ".");
+        dataString = dataString.replace(/\.+/g, ".");
+        dataString = dataString.replace(/\./g, ":");
+        dataString = dataString.replace(/:+/g, ":");
+        parts = dataString.split(':');
+
+        return {
+            downloaded: parts[1],
+            progress: parseInt(parts[2]),
+            speed: parts[3],
+            timeLeft: parts[4]
+        };
     }
 
     /**
