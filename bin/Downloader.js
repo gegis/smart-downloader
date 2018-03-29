@@ -51,7 +51,7 @@ var Downloader = function () {
 
     /**
      * Main download function
-     * @param options object - uri, destinationDir, [destinationFileName, md5, downloadSpeedLimit, resumeDownload]
+     * @param options object - uri, destinationDir, [destinationFileName, md5, extractDir]
      * @param next function - main callback
      * @param progress - callback to receive file download progress
      */

@@ -135,3 +135,15 @@ downloader.download({
     console.log(data);
 });
 ```
+
+## Options
+Can be passed either to constructor or `download` function:
+- `uri` - url to download file from
+- `destinationDir` - destination directory, absolute or relative path
+- `resumeDownload` - resume download, default: `true`
+- `downloadSpeedLimit` - download speed limit integer value, default: `null`
+- `downloadSpeedLimitUnit` - download speed limit unit value, default `'k'` (KiloBytes)
+- `progressUpdateInterval` - it tells how often to update with download progress, value in ms, default `1000`
+- `destinationFileName` - downloaded file name in destination dir, otherwise it will use original file name
+- `md5` - if md5 checksum specified, it will verify downloaded file md5 checksum against it
+- `extractDir` - if specified, it will extract downloaded archive to the specified dir
