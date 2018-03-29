@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/Downloader.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> Downloader.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">83.64% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>92/110</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">84% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>42/50</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>13/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">83.64% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>92/110</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+&nbsp;
+const path = require('path');
+const fse = require('fs-extra');
+const { spawn } = require('child_process');
+const commandExistsSync = require('command-exists').sync;
+const _ = require('lodash');
+const MDFive = require('mdfive').MDFive;
+const decompress = require('decompress');
+&nbsp;
+const md5 = new MDFive();
+const wgetErrorCodes = {
+    1: 'Wget error',
+    2: 'Parse error',
+    3: 'File I/O error',
+    4: 'Network failure',
+    5: 'SSL verification failure',
+    6: 'Username/password authentication failure',
+    7: 'Protocol error',
+    8: 'Server issued an error response'
+};
+&nbsp;
+/**
+ * Downloader Class
+ */
+class Downloader {
+&nbsp;
+    /**
+     * Constructor
+     * @param options object - to override default values
+     */
+    constructor(options) {
+&nbsp;
+        this.config = _.merge({}, {
+            debug: false,
+            resumeDownload: true,
+            downloadSpeedLimit: null, //value in KiloBytes per second
+            downloadSpeedLimitUnit: 'k',
+            progressUpdateInterval: 1000 //value in ms
+        }, options);
+    }
+&nbsp;
+    /**
+     * Main download function
+     * @param options object - uri, destinationDir, [destinationFileName, md5, extractDir]
+     * @param next function - main callback
+     * @param progress - callback to receive file download progress
+     */
+    download(options, next, progress) {
+&nbsp;
+        let command, commandOptions;
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (commandExistsSync('wget')) {
+            try {
+&nbsp;
+                options = _.merge({}, this.config, options);
+                commandOptions = this.buildCommandOptions(options);
+                fse.ensureDirSync(options.destinationDir);
+                command = spawn('wget', commandOptions);
+                this.registerListeners(command, options, next, progress);
+            } catch(e) {
+&nbsp;
+                next(e, options);
+            }
+        } else {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            next(new Error('wget command is not supported'), options);</span>
+            //TODO implement a fall back download
+        }
+    }
+&nbsp;
+    /**
+     * Builds command line params for wget function
+     * @param options
+     * @returns {Array}
+     */
+    buildCommandOptions(options) {
+&nbsp;
+        let cmdOptions = [];
+&nbsp;
+        this.validateOptions(options);
+&nbsp;
+        if (options.destinationFileName) {
+&nbsp;
+            options.destinationFilePath = path.resolve(options.destinationDir, options.destinationFileName);
+        } else {
+&nbsp;
+            options.destinationFilePath = path.resolve(options.destinationDir, path.basename(options.uri));
+        }
+&nbsp;
+        if (options.resumeDownload) {
+&nbsp;
+            cmdOptions.push('-c');
+        }
+&nbsp;
+        if (options.downloadSpeedLimit) {
+&nbsp;
+            cmdOptions.push(`--limit-rate=${options.downloadSpeedLimit}${options.downloadSpeedLimitUnit}`);
+        }
+&nbsp;
+        cmdOptions.push('-O', options.destinationFilePath);
+&nbsp;
+        cmdOptions.push(options.uri);
+&nbsp;
+        this.debug('wget', cmdOptions.join(" "));
+&nbsp;
+        return cmdOptions;
+    }
+&nbsp;
+    /**
+     * Validates required options values
+     * @param options
+     */
+    validateOptions(options) {
+&nbsp;
+        if (!options.uri) {
+&nbsp;
+            throw new Error('Download uri not specified');
+        }
+&nbsp;
+        if (!options.destinationDir) {
+&nbsp;
+            throw new Error('Destination dir not specified');
+        }
+    }
+&nbsp;
+    /**
+     * Registers child process stdout/stderr listeners and binds parsed responses to next and progress callbacks
+     * @param command function - a spawned child process
+     * @param options object - all options
+     * @param next function - main callback
+     * @param progress function - progress updates callback
+     */
+    registerListeners(command, options, next, progress) {
+&nbsp;
+        let commandError = null;
+        let progressOptions = {timeout: null};
+&nbsp;
+        if (progress &amp;&amp; _.isFunction(progress)) {
+&nbsp;
+            command.stdout.on('data', (data) =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                this.onData(data, options, progressOptions, progress);</span>
+            });
+&nbsp;
+            command.stderr.on('data', (data) =&gt; {
+&nbsp;
+                this.onData(data, options, progressOptions, progress);
+            });
+        }
+&nbsp;
+        command.on('error', (err) =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            commandError = err;</span>
+<span class="cstat-no" title="statement not covered" >            command.kill("SIGINT");</span>
+        });
+&nbsp;
+        command.stdout.on('error', (err) =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            commandError = err;</span>
+<span class="cstat-no" title="statement not covered" >            command.kill("SIGINT");</span>
+        });
+&nbsp;
+        command.stderr.on('error', (err) =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            commandError = err;</span>
+<span class="cstat-no" title="statement not covered" >            command.kill("SIGINT");</span>
+        });
+&nbsp;
+        command.on('exit', (code, signal) =&gt; {
+&nbsp;
+            clearTimeout(progressOptions.timeout);
+            progressOptions.timeout = null;
+&nbsp;
+            if (code === 0 &amp;&amp; _.isNull(signal)) {
+&nbsp;
+                this.onSuccessExit(options, next, progress);
+            } else {
+&nbsp;
+                this.onErrorExit(commandError, code, signal, options, next);
+            }
+        });
+    }
+&nbsp;
+    /**
+     * After child process exit without error code, check md5 if needed and try to extract if needed
+     * @param options
+     * @param next
+     * @param progress
+     */
+    onSuccessExit(options, next, progress) {
+&nbsp;
+        _.merge(options, {progress: 100});
+&nbsp;
+        if (progress &amp;&amp; _.isFunction(progress)) {
+&nbsp;
+            progress(null, options);
+        }
+&nbsp;
+        return this.checkMd5Sum(options, this.extract.bind(this, next));
+    }
+&nbsp;
+&nbsp;
+    /**
+     * After child process exit with error code, finishes cb flow
+     * @param commandError
+     * @param code
+     * @param signal
+     * @param options
+     * @param next
+     * @returns {*}
+     */
+    onErrorExit(commandError, code, signal, options, next) {
+&nbsp;
+        let err;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (commandError) {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            err = commandError;</span>
+        } else {
+&nbsp;
+            err = this.getWgetError(code, signal);
+        }
+&nbsp;
+        return next(
+            err,
+            _.merge({}, options, {
+                error: {
+                    code,
+                    signal
+                }
+            })
+        );
+    }
+&nbsp;
+    /**
+     * Tries to get pretty error message for exit code
+     * @param code
+     * @param signal
+     * @returns {Error}
+     */
+    getWgetError(code, signal) {
+&nbsp;
+        let err = 'Download error';
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (wgetErrorCodes.hasOwnProperty(code)) {
+&nbsp;
+            err = wgetErrorCodes[code];
+        } else {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (code) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                err += `. Code: ${code}`;</span>
+            }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (signal) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                err += `. Signal: ${signal}`;</span>
+            }
+        }
+&nbsp;
+        return new Error(err);
+    }
+&nbsp;
+    /**
+     * On data from child process stdout/stderr, it sends progress updates on every options.progressUpdateInterval
+     * @param data buffer
+     * @param options object
+     * @param progressOptions object
+     * @param progress function
+     */
+    onData(data, options, progressOptions, progress) {
+&nbsp;
+        let dataString;
+        if (data &amp;&amp; !progressOptions.timeout) {
+&nbsp;
+            dataString = data.toString();
+            if (data &amp;&amp; _.indexOf(dataString, "%") !== -1) {
+&nbsp;
+                progress(null, _.merge({}, options, {progress: this.parseProgress(dataString)}));
+                progressOptions.timeout = setTimeout(() =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                    clearTimeout(progressOptions.timeout);</span>
+<span class="cstat-no" title="statement not covered" >                    progressOptions.timeout = null;</span>
+                }, options.progressUpdateInterval);
+            }
+        }
+    }
+&nbsp;
+    /**
+     * Parse progress string to get percentage value
+     * @param dataString
+     * @returns {*|string}
+     */
+    parseProgress(dataString) {
+&nbsp;
+        dataString = dataString.replace(/\./g, "");
+        dataString = dataString.replace(/ /g, "");
+        dataString = dataString.replace(/\n/g, "");
+        dataString = dataString.replace(/\t/g, "");
+        dataString = dataString.replace(/\r/g, "");
+&nbsp;
+        return dataString.split("%")[0];
+    }
+&nbsp;
+    /**
+     * Checks if options.md5 matches doanloaded file
+     * @param options object
+     * @param next function
+     */
+    checkMd5Sum(options, next) {
+&nbsp;
+        if (options.md5) {
+&nbsp;
+            options.md5Matches = false;
+            md5.fileChecksum(options.destinationFilePath)
+                .then(checksum =&gt; {
+&nbsp;
+                    if (checksum === options.md5) {
+&nbsp;
+                        options.md5Matches = true;
+                        return next(null, options);
+&nbsp;
+                    } else {
+&nbsp;
+                        options.md5Actual = checksum;
+                        return next(new Error('md5sum does not match'), options);
+                    }
+&nbsp;
+                })
+                .catch(e =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                    return next(e, options);</span>
+                });
+        } else {
+&nbsp;
+            next(null, options);
+        }
+&nbsp;
+    }
+&nbsp;
+    /**
+     * If extract dir is specified, it will attempt to extract downloaded file
+     * @param next
+     * @param err
+     * @param options
+     * @returns {*}
+     */
+    extract(next, err, options) {
+&nbsp;
+        if (err) {
+&nbsp;
+            return next(err, options);
+        }
+&nbsp;
+        if (options.extractDir) {
+&nbsp;
+            decompress(options.destinationFilePath, options.extractDir)
+                .then(files =&gt; {
+&nbsp;
+                    return next(null, options);
+                })
+                .catch(e =&gt; {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                    return next(e, options);</span>
+                });
+        } else {
+&nbsp;
+            return next(null, options);
+        }
+    }
+&nbsp;
+    /**
+     * Debugs data if enabled
+     * @param data
+     */
+    debug(data) {
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.config.debug) {
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            console.log.apply(null, arguments);</span>
+        }
+    }
+}
+&nbsp;
+module.exports = Downloader;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Mar 29 2018 11:01:04 GMT+0200 (CEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
