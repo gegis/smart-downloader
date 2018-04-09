@@ -68,6 +68,8 @@ class Downloader {
             next(new Error('wget command is not supported'), options);
             //TODO implement a fall back download
         }
+
+        return command;
     }
 
     /**
@@ -99,13 +101,41 @@ class Downloader {
             cmdOptions.push(`--limit-rate=${options.downloadSpeedLimit}${options.downloadSpeedLimitUnit}`);
         }
 
+        this.applyHeaders(cmdOptions, options);
+        this.applyOtherWgetOptions(cmdOptions, options);
+
         cmdOptions.push('-O', options.destinationFilePath);
 
         cmdOptions.push(options.uri);
 
-        this.debug('wget', cmdOptions.join(" "));
+        this.debug(options, cmdOptions);
 
         return cmdOptions;
+    }
+
+    applyHeaders(cmdOptions, options) {
+
+        if (options && options.headers && _.isArray(options.headers)) {
+
+            options.headers.map((header) => {
+
+                if (header) {
+
+                    cmdOptions.push(`--header='${header.replace(/'/g, '"')}'`);
+                }
+            });
+        }
+    }
+
+    applyOtherWgetOptions(cmdOptions, options) {
+
+        if (options && options.wgetOptions && _.isArray(options.wgetOptions)) {
+
+            options.wgetOptions.map((opt) => {
+
+                cmdOptions.push(opt);
+            });
+        }
     }
 
     /**
@@ -136,23 +166,22 @@ class Downloader {
 
         let rlOut, rlErr;
         let commandError = null;
-        let progressOptions = {timeout: null};
+        let progressOptions = {timeout: null, callbackCalled: false};
 
-        if (progress && _.isFunction(progress)) {
+        // TODO using readLine method - updates are not that frequent,
+        // so progressUpdateInterval does not work as expected
+        rlOut = readline.createInterface({input:command.stdout});
+        rlErr = readline.createInterface({input:command.stderr});
 
-            rlOut = readline.createInterface({input:command.stdout});
-            rlErr = readline.createInterface({input:command.stderr});
+        rlOut.on('line', (line) => {
 
-            rlOut.on('line', (line) => {
+            this.onDataLine(line, options, progressOptions, progress);
+        });
 
-                this.onDataLine(line, options, progressOptions, progress);
-            });
+        rlErr.on('line', (line) => {
 
-            rlErr.on('line', (line) => {
-
-                this.onDataLine(line, options, progressOptions, progress);
-            });
-        }
+            this.onDataLine(line, options, progressOptions, progress);
+        });
 
         command.on('error', (err) => {
 
@@ -179,7 +208,7 @@ class Downloader {
 
             if (code === 0 && _.isNull(signal)) {
 
-                this.onSuccessExit(options, next, progress);
+                this.onSuccessExit(options, next, progress, progressOptions);
             } else {
 
                 this.onErrorExit(commandError, code, signal, options, next);
@@ -193,13 +222,13 @@ class Downloader {
      * @param next
      * @param progress
      */
-    onSuccessExit(options, next, progress) {
+    onSuccessExit(options, next, progress, progressOptions) {
 
         _.merge(options, {progress: 100});
 
-        if (progress && _.isFunction(progress)) {
+        if (progress && _.isFunction(progress) && !progressOptions.callbackCalled) {
 
-            progress(null, options);
+            progress(null, options, {downloaded: null, speed: null, timeLeft: null});
         }
 
         return this.checkMd5Sum(options, this.extract.bind(this, next));
@@ -268,18 +297,22 @@ class Downloader {
 
     /**
      * On data from child process stdout/stderr, it sends progress updates on every options.progressUpdateInterval
-     * @param data buffer
+     * @param line string
      * @param options object
      * @param progressOptions object
      * @param progress function
      */
     onDataLine(line, options, progressOptions, progress) {
 
+        let progressData;
+
         if (line && !progressOptions.timeout) {
 
             if (_.indexOf(line, "%") !== -1) {
 
-                progress(null, _.merge({}, options, this.parseProgress(line)));
+                progressData = this.parseProgress(line);
+                options.progress = progressData.progress;
+                this.notifyProgress(options, progressOptions, progress, progressData);
                 progressOptions.timeout = setTimeout(() => {
 
                     clearTimeout(progressOptions.timeout);
@@ -290,13 +323,35 @@ class Downloader {
     }
 
     /**
+     * Calls progress callback with progress information, if there is one set
+     * @param options
+     * @param progressOptions
+     * @param progress
+     * @param progressData
+     */
+    notifyProgress(options, progressOptions, progress, progressData) {
+
+        if (progress && _.isFunction(progress)) {
+
+            progressOptions.callbackCalled = true;
+            progress(null, _.merge({}, options, progressData));
+        }
+    }
+
+    /**
      * Parse progress string to get percentage value
      * @param dataString
-     * @returns {*|string}
+     * @returns object
      */
     parseProgress(dataString) {
 
         let parts;
+        let data = {
+            downloaded: null,
+            progress: null,
+            speed: null,
+            timeLeft: null
+        };
 
         dataString = dataString.replace(/ +/g, " ");
         dataString = dataString.replace(/ /g, ":");
@@ -304,14 +359,36 @@ class Downloader {
         dataString = dataString.replace(/\.+/g, ".");
         dataString = dataString.replace(/\./g, ":");
         dataString = dataString.replace(/:+/g, ":");
+        dataString = dataString.replace(/=/g, ":");
         parts = dataString.split(':');
 
-        return {
-            downloaded: parts[1],
-            progress: parseInt(parts[2]),
-            speed: parts[3],
-            timeLeft: parts[4]
-        };
+        if (_.size(parts) === 7) {
+
+            data = {
+                downloaded: parts[1],
+                progress: parseInt(parts[2]),
+                speed: `${parts[3]}.${parts[4]}`,
+                timeLeft: `${parts[5]}.${parts[6]}`
+            };
+        } else if (_.size(parts) === 6) {
+
+            data = {
+                downloaded: parts[1],
+                progress: parseInt(parts[2]),
+                speed: `${parts[3]}.${parts[4]}`,
+                timeLeft: parts[5]
+            };
+        } else {
+
+            data = {
+                downloaded: parts[1],
+                progress: parseInt(parts[2]),
+                speed: parts[3],
+                timeLeft: parts[4]
+            };
+        }
+
+        return data;
     }
 
     /**
@@ -383,13 +460,17 @@ class Downloader {
 
     /**
      * Debugs data if enabled
-     * @param data
+     * @param options
+     * @param cmdOptions
      */
-    debug(data) {
+    debug(options, cmdOptions) {
 
         if (this.config.debug) {
 
-            console.log.apply(null, arguments);
+            console.log('wget', cmdOptions.join(" "));
+            options.debugInfo = {
+                command: `wget ${cmdOptions.join(" ")}`
+            };
         }
     }
 }

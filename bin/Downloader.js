@@ -82,6 +82,8 @@ var Downloader = function () {
                 next(new Error('wget command is not supported'), options);
                 //TODO implement a fall back download
             }
+
+            return command;
         }
 
         /**
@@ -116,13 +118,43 @@ var Downloader = function () {
                 cmdOptions.push('--limit-rate=' + options.downloadSpeedLimit + options.downloadSpeedLimitUnit);
             }
 
+            this.applyHeaders(cmdOptions, options);
+            this.applyOtherWgetOptions(cmdOptions, options);
+
             cmdOptions.push('-O', options.destinationFilePath);
 
             cmdOptions.push(options.uri);
 
-            this.debug('wget', cmdOptions.join(" "));
+            this.debug(options, cmdOptions);
 
             return cmdOptions;
+        }
+    }, {
+        key: 'applyHeaders',
+        value: function applyHeaders(cmdOptions, options) {
+
+            if (options && options.headers && _.isArray(options.headers)) {
+
+                options.headers.map(function (header) {
+
+                    if (header) {
+
+                        cmdOptions.push('--header=\'' + header.replace(/'/g, '"') + '\'');
+                    }
+                });
+            }
+        }
+    }, {
+        key: 'applyOtherWgetOptions',
+        value: function applyOtherWgetOptions(cmdOptions, options) {
+
+            if (options && options.wgetOptions && _.isArray(options.wgetOptions)) {
+
+                options.wgetOptions.map(function (opt) {
+
+                    cmdOptions.push(opt);
+                });
+            }
         }
 
         /**
@@ -161,23 +193,22 @@ var Downloader = function () {
             var rlOut = void 0,
                 rlErr = void 0;
             var commandError = null;
-            var progressOptions = { timeout: null };
+            var progressOptions = { timeout: null, callbackCalled: false };
 
-            if (progress && _.isFunction(progress)) {
+            // TODO using readLine method - updates are not that frequent,
+            // so progressUpdateInterval does not work as expected
+            rlOut = readline.createInterface({ input: command.stdout });
+            rlErr = readline.createInterface({ input: command.stderr });
 
-                rlOut = readline.createInterface({ input: command.stdout });
-                rlErr = readline.createInterface({ input: command.stderr });
+            rlOut.on('line', function (line) {
 
-                rlOut.on('line', function (line) {
+                _this.onDataLine(line, options, progressOptions, progress);
+            });
 
-                    _this.onDataLine(line, options, progressOptions, progress);
-                });
+            rlErr.on('line', function (line) {
 
-                rlErr.on('line', function (line) {
-
-                    _this.onDataLine(line, options, progressOptions, progress);
-                });
-            }
+                _this.onDataLine(line, options, progressOptions, progress);
+            });
 
             command.on('error', function (err) {
 
@@ -204,7 +235,7 @@ var Downloader = function () {
 
                 if (code === 0 && _.isNull(signal)) {
 
-                    _this.onSuccessExit(options, next, progress);
+                    _this.onSuccessExit(options, next, progress, progressOptions);
                 } else {
 
                     _this.onErrorExit(commandError, code, signal, options, next);
@@ -221,13 +252,13 @@ var Downloader = function () {
 
     }, {
         key: 'onSuccessExit',
-        value: function onSuccessExit(options, next, progress) {
+        value: function onSuccessExit(options, next, progress, progressOptions) {
 
             _.merge(options, { progress: 100 });
 
-            if (progress && _.isFunction(progress)) {
+            if (progress && _.isFunction(progress) && !progressOptions.callbackCalled) {
 
-                progress(null, options);
+                progress(null, options, { downloaded: null, speed: null, timeLeft: null });
             }
 
             return this.checkMd5Sum(options, this.extract.bind(this, next));
@@ -298,7 +329,7 @@ var Downloader = function () {
 
         /**
          * On data from child process stdout/stderr, it sends progress updates on every options.progressUpdateInterval
-         * @param data buffer
+         * @param line string
          * @param options object
          * @param progressOptions object
          * @param progress function
@@ -308,11 +339,15 @@ var Downloader = function () {
         key: 'onDataLine',
         value: function onDataLine(line, options, progressOptions, progress) {
 
+            var progressData = void 0;
+
             if (line && !progressOptions.timeout) {
 
                 if (_.indexOf(line, "%") !== -1) {
 
-                    progress(null, _.merge({}, options, this.parseProgress(line)));
+                    progressData = this.parseProgress(line);
+                    options.progress = progressData.progress;
+                    this.notifyProgress(options, progressOptions, progress, progressData);
                     progressOptions.timeout = setTimeout(function () {
 
                         clearTimeout(progressOptions.timeout);
@@ -323,9 +358,28 @@ var Downloader = function () {
         }
 
         /**
+         * Calls progress callback with progress information, if there is one set
+         * @param options
+         * @param progressOptions
+         * @param progress
+         * @param progressData
+         */
+
+    }, {
+        key: 'notifyProgress',
+        value: function notifyProgress(options, progressOptions, progress, progressData) {
+
+            if (progress && _.isFunction(progress)) {
+
+                progressOptions.callbackCalled = true;
+                progress(null, _.merge({}, options, progressData));
+            }
+        }
+
+        /**
          * Parse progress string to get percentage value
          * @param dataString
-         * @returns {*|string}
+         * @returns object
          */
 
     }, {
@@ -333,6 +387,12 @@ var Downloader = function () {
         value: function parseProgress(dataString) {
 
             var parts = void 0;
+            var data = {
+                downloaded: null,
+                progress: null,
+                speed: null,
+                timeLeft: null
+            };
 
             dataString = dataString.replace(/ +/g, " ");
             dataString = dataString.replace(/ /g, ":");
@@ -340,14 +400,36 @@ var Downloader = function () {
             dataString = dataString.replace(/\.+/g, ".");
             dataString = dataString.replace(/\./g, ":");
             dataString = dataString.replace(/:+/g, ":");
+            dataString = dataString.replace(/=/g, ":");
             parts = dataString.split(':');
 
-            return {
-                downloaded: parts[1],
-                progress: parseInt(parts[2]),
-                speed: parts[3],
-                timeLeft: parts[4]
-            };
+            if (_.size(parts) === 7) {
+
+                data = {
+                    downloaded: parts[1],
+                    progress: parseInt(parts[2]),
+                    speed: parts[3] + '.' + parts[4],
+                    timeLeft: parts[5] + '.' + parts[6]
+                };
+            } else if (_.size(parts) === 6) {
+
+                data = {
+                    downloaded: parts[1],
+                    progress: parseInt(parts[2]),
+                    speed: parts[3] + '.' + parts[4],
+                    timeLeft: parts[5]
+                };
+            } else {
+
+                data = {
+                    downloaded: parts[1],
+                    progress: parseInt(parts[2]),
+                    speed: parts[3],
+                    timeLeft: parts[4]
+                };
+            }
+
+            return data;
         }
 
         /**
@@ -418,16 +500,20 @@ var Downloader = function () {
 
         /**
          * Debugs data if enabled
-         * @param data
+         * @param options
+         * @param cmdOptions
          */
 
     }, {
         key: 'debug',
-        value: function debug(data) {
+        value: function debug(options, cmdOptions) {
 
             if (this.config.debug) {
 
-                console.log.apply(null, arguments);
+                console.log('wget', cmdOptions.join(" "));
+                options.debugInfo = {
+                    command: 'wget ' + cmdOptions.join(" ")
+                };
             }
         }
     }]);

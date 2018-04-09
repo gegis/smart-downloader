@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "gulp default",
-    "test": "gulp test"
+    "build": "./node_modules/.bin/gulp default",
+    "test": "./node_modules/.bin/gulp test"
   },
   "keywords": [
     "download",

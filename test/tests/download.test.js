@@ -2,11 +2,11 @@
 
 const assert = require('assert');
 const path = require('path');
-const fse = require('fs-extra');
 const SmartDownloader = require('../../src/Downloader');
 
 const img1 = 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code-1.jpg';
 const img2 = 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code-2.jpg';
+const imgLarge = 'https://unsplash.com/photos/cvBBO4PzWPg/download?force=true';
 const arcTar = 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tar';
 const arcTarGz = 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tar.gz';
 const arcTgz = 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tgz';
@@ -101,33 +101,24 @@ describe('File Download Tests', function() {
         it('should call back progress cb', function (done) {
 
             const downloader = new SmartDownloader({
-                downloadSpeedLimit: 10,
-                progressUpdateInterval: 10
+                downloadSpeedLimit: 30,
+                progressUpdateInterval: 100
             });
 
-            const fileName = 'advanced-3.jpg';
-
-            const filePath = path.resolve(downloadDir, fileName);
-
-            try {
-
-                fse.statSync(filePath);
-                fse.unlinkSync(filePath);
-            } catch(e) {
-
-                //File does not exist, do nothing
-            }
-
             downloader.download({
-                uri: img1,
+                uri: arcTarGz,
                 destinationDir: downloadDir,
-                destinationFileName: fileName
+                destinationFileName: 'progress.tar.gz',
+                extractDir: path.resolve(downloadDir, 'tarGz')
             }, (err, data) => {
 
                 done();
             }, (err, data) => {
 
+                assert.equal(data.hasOwnProperty('downloaded'), true);
                 assert.equal(data.hasOwnProperty('progress'), true);
+                assert.equal(data.hasOwnProperty('speed'), true);
+                assert.equal(data.hasOwnProperty('timeLeft'), true);
             });
         });
     });
@@ -210,6 +201,73 @@ describe('File Download Tests', function() {
                 assert.equal(data.extractDir, path.resolve(downloadDir, 'zip'));
                 done();
             });
+        });
+    });
+
+    describe(`Test set headers`, function () {
+        it(`should set headers and escape strings`, function (done) {
+
+            const downloader = new SmartDownloader({
+                debug: true
+            });
+            downloader.download({
+                uri: arcZip,
+                destinationDir: downloadDir,
+                headers: ['Accept-Language: "en-us"', "Accept-Encoding: 'gzip, deflate'"]
+            }, (err, data) => {
+
+                assert.equal(err, null);
+                assert.equal(data.debugInfo.command, 'wget -c --header=\'Accept-Language: "en-us"\' --header=\'Accept-Encoding: "gzip, deflate"\' -O /home/egis/workspace/smart-downloader/downloads/code.zip https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip');
+
+                done();
+            });
+        });
+    });
+
+    describe(`Test set wgetOptions`, function () {
+        it(`should apply wget options`, function (done) {
+
+            const downloader = new SmartDownloader({
+                debug: true
+            });
+            downloader.download({
+                uri: arcZip,
+                destinationDir: downloadDir,
+                wgetOptions: ['--no-dns-cache', '--wait=1']
+            }, (err, data) => {
+
+                assert.equal(err, null);
+                assert.equal(data.debugInfo.command, 'wget -c --no-dns-cache --wait=1 -O /home/egis/workspace/smart-downloader/downloads/code.zip https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip');
+
+                done();
+            });
+        });
+    });
+
+    describe(`Test download stop`, function () {
+        it(`should stop the download`, function (done) {
+
+            const downloader = new SmartDownloader();
+            const imgName = 'test-kill.jpg';
+
+            const cmd = downloader.download({
+                uri: 'https://unsplash.com/photos/cvBBO4PzWPg/download?force=true',
+                destinationDir: downloadDir,
+                destinationFileName: imgName,
+                downloadSpeedLimit: 500,
+                progressUpdateInterval: 100
+            }, (err, data) => {
+
+                assert.equal(err.message, 'Download error. Signal: SIGINT');
+                assert.equal(data.progress < 100, true);
+
+                done();
+            });
+
+            setTimeout(() => {
+
+                cmd.kill("SIGINT");
+            }, 3000);
         });
     });
 
