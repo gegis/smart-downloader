@@ -136,6 +136,86 @@ downloader.download({
 });
 ```
 
+Specify request Headers (it accepts the array of header strings):
+```
+const SmartDownloader = require('smart-downloader');
+
+const downloader = new SmartDownloader();
+
+downloader.download({
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tar.gz',
+    destinationDir: './downloads/',
+    extractDir: './downloads/code',
+    headers: ['Accept-Language: "en-us"', "Accept-Encoding: 'gzip, deflate'"]
+}, (err, data) => {
+
+    if (err) {
+
+        console.log(err);
+    }
+    console.log(data);
+});
+```
+
+Specify other wget related options (it accepts the array of options):
+```
+const SmartDownloader = require('smart-downloader');
+
+const downloader = new SmartDownloader();
+
+downloader.download({
+    uri: 'https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.tar.gz',
+    destinationDir: './downloads/',
+    extractDir: './downloads/code',
+    wgetOptions: ['--no-dns-cache', '--wait=1']
+}, (err, data) => {
+
+    if (err) {
+
+        console.log(err);
+    }
+    console.log(data);
+});
+```
+
+Example of how to stop ("pause") current download process:
+```
+const SmartDownloader = require('smart-downloader');
+
+const downloader = new SmartDownloader();
+
+// It returns child process instance
+const cmd = downloader.download({
+    uri: 'https://unsplash.com/photos/cvBBO4PzWPg/download?force=true',
+    destinationDir: './downloads/',
+    destinationFileName: 'test-stop.jpg,
+    downloadSpeedLimit: 300
+}, (err, data) => {
+
+    if (err) {
+
+        // Handling the known error
+        if (err.message === 'Download error. Signal: SIGTERM') {
+
+            console.log('Handled stop);
+        } else {
+
+            console.log(err);
+        }
+    }
+    console.log(data);
+});
+
+// After 3 seconds we decide we want to stop it from downloading
+setTimeout(() => {
+
+    // You can kill it with custom signal, i.e. "SIGINT"
+    // By default it's SIGTERM signal
+    // It will cause an error in your callback, make sure to handle it
+    cmd.kill();
+}, 3000);
+```
+
 ## Options
 Can be passed either to constructor or `download` function:
 - `uri` - url to download file from
@@ -147,3 +227,5 @@ Can be passed either to constructor or `download` function:
 - `destinationFileName` - downloaded file name in destination dir, otherwise it will use original file name
 - `md5` - if md5 checksum specified, it will verify downloaded file md5 checksum against it
 - `extractDir` - if specified, it will extract downloaded archive to the specified dir
+- `headers` - (array) if specified, it will append headers to request
+- `wgetOptions` - (array) if specified, it will append all options related to wget command

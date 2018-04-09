@@ -248,17 +248,15 @@ describe('File Download Tests', function() {
         it(`should stop the download`, function (done) {
 
             const downloader = new SmartDownloader();
-            const imgName = 'test-kill.jpg';
 
             const cmd = downloader.download({
                 uri: 'https://unsplash.com/photos/cvBBO4PzWPg/download?force=true',
                 destinationDir: downloadDir,
-                destinationFileName: imgName,
-                downloadSpeedLimit: 500,
-                progressUpdateInterval: 100
+                destinationFileName: 'test-kill.jpg',
+                downloadSpeedLimit: 500
             }, (err, data) => {
 
-                assert.equal(err.message, 'Download error. Signal: SIGINT');
+                assert.equal(err.message, 'Download error. Signal: SIGTERM');
                 assert.equal(data.progress < 100, true);
 
                 done();
@@ -266,7 +264,7 @@ describe('File Download Tests', function() {
 
             setTimeout(() => {
 
-                cmd.kill("SIGINT");
+                cmd.kill();
             }, 3000);
         });
     });
