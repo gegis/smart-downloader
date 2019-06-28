@@ -217,7 +217,7 @@ describe('File Download Tests', function() {
             }, (err, data) => {
 
                 assert.equal(err, null);
-                assert.equal(data.debugInfo.command, 'wget -c --header=\'Accept-Language: "en-us"\' --header=\'Accept-Encoding: "gzip, deflate"\' -O /home/egis/workspace/smart-downloader/downloads/code.zip https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip');
+                assert.equal(data.debugInfo.command, `wget -c --header=\'Accept-Language: "en-us"\' --header=\'Accept-Encoding: "gzip, deflate"\' -O ${path.resolve(downloadDir, path.basename(arcZip))} https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip`);
 
                 done();
             });
@@ -237,7 +237,7 @@ describe('File Download Tests', function() {
             }, (err, data) => {
 
                 assert.equal(err, null);
-                assert.equal(data.debugInfo.command, 'wget -c --no-dns-cache --wait=1 -O /home/egis/workspace/smart-downloader/downloads/code.zip https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip');
+                assert.equal(data.debugInfo.command, `wget -c --no-dns-cache --wait=1 -O ${path.resolve(downloadDir, path.basename(arcZip))} https://github.com/gegis/smart-downloader/raw/master/test/fixtures/code.zip`);
 
                 done();
             });
